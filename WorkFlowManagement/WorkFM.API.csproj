@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.20" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\WorkFM.BL\WorkFM.BL.csproj" />
+    <ProjectReference Include="..\WorkFM.Common\WorkFM.Common.csproj" />
+    <ProjectReference Include="..\WorkFM.DL\WorkFM.DL.csproj" />
   </ItemGroup>
 
 </Project>
