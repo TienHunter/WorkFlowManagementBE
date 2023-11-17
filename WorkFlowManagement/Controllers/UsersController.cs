@@ -20,7 +20,7 @@ namespace WorkFM.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUser()
         {
-            var res = await _userBL.GetAllAsync();
+            var res = await _userBL.GetPagignAsync(null);
 
             return StatusCode(StatusCodes.Status200OK, res);
         }

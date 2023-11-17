@@ -12,8 +12,8 @@ namespace WorkFM.BL.Services.Users
     public class UserProfile:Profile
     {
         public UserProfile() { 
-            CreateMap<UserDto,UserModel>().ReverseMap();
-            CreateMap<User,UserModel>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<UserRegister, User>();
         }
     }
 }

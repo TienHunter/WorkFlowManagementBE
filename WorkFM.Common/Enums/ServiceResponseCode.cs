@@ -10,6 +10,8 @@ namespace WorkFM.Common.Enums
     {
         Success = 0,
         Warning=1,
+        UsernameTaken=2,
+        EmailTaken=3,
         Error = 99,
         Exception=999,
     }

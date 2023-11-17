@@ -3,13 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFM.API", "WorkFlowManagement\WorkFM.API.csproj", "{27B3B3A5-9FC9-456B-B8DC-BB9A009F9CEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFM.API", "WorkFlowManagement\WorkFM.API.csproj", "{27B3B3A5-9FC9-456B-B8DC-BB9A009F9CEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFM.Common", "WorkFM.Common\WorkFM.Common.csproj", "{22430322-ABFB-4E13-BE8A-8697AB6D5452}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFM.Common", "WorkFM.Common\WorkFM.Common.csproj", "{22430322-ABFB-4E13-BE8A-8697AB6D5452}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFM.BL", "WorkFM.BL\WorkFM.BL.csproj", "{141E1AF8-D6FE-44D3-B7FD-FB0F16E08F01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFM.BL", "WorkFM.BL\WorkFM.BL.csproj", "{141E1AF8-D6FE-44D3-B7FD-FB0F16E08F01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFM.DL", "WorkFM.DL\WorkFM.DL.csproj", "{5186069F-F923-4B45-B417-9A0F2F9BB523}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFM.DL", "WorkFM.DL\WorkFM.DL.csproj", "{5186069F-F923-4B45-B417-9A0F2F9BB523}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{857FD531-D99E-4575-9F98-EA45859760F9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

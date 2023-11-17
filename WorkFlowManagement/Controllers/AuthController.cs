@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WorkFM.BL.Services.Auth;
-using WorkFM.Common.Models.Auth;
+using WorkFM.Common.Data.Users;
 
 namespace WorkFM.API.Controllers
 {
@@ -18,9 +18,16 @@ namespace WorkFM.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AuthRequest accountLogin)
+        public async Task<IActionResult> Login([FromBody] UserLogin accountLogin)
         {
-            var res = await _authBL.Login(accountLogin.Username, accountLogin.Password);
+            var res = await _authBL.Login(accountLogin);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegister userRegister)
+        {
+            var res = await _authBL.Register(userRegister);
             return StatusCode(StatusCodes.Status200OK, res);
         }
     }

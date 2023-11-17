@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorkFM.Common.Enums;
 using System.Reflection;
+using WorkFM.Common.Utils;
 
 namespace WorkFM.Common.Commands
 {
@@ -75,7 +76,7 @@ namespace WorkFM.Common.Commands
                 throw new Exception("Invalid typeEntity or keyProperty");
             }
 
-            var sql = $"SELECT * FROM {tableNameAttribute.Name} WHERE {keyProperty} = @Id";
+            var sql = $"SELECT * FROM {tableNameAttribute.Name} WHERE {keyProperty.Name} = @Id";
             return sql;
         }
 
@@ -105,15 +106,9 @@ namespace WorkFM.Common.Commands
 
         public static string Create<T>()
         {
-            var tableNameAttribute = typeof(T).GetCustomAttributes<TableAttribute>().FirstOrDefault();
+            var tableName = Helper.GetTableName(typeof(T));
             var properties = typeof(T).GetProperties();
-
-            if (tableNameAttribute == null)
-            {
-                // ghi log
-                throw new Exception("Invalid typeEntity");
-            }
-            var sql = $"INSERT INTO {tableNameAttribute.Name} (";
+            var sql = $"INSERT INTO {tableName} (";
             sql += string.Join(" , ", properties.Select(prop => prop.Name));
             sql += $") VALUES ({string.Join(", ", properties.Select(prop => $"@{prop.Name}"))});";
 
@@ -149,6 +144,25 @@ namespace WorkFM.Common.Commands
             }
 
             var sql = $"DELETE FROM {tableNameAttribute.Name} WHERE {keyProperty} = @Id";
+            return sql;
+        }
+
+        //--------- user --------------------
+        public static string GetUserByUsernameOrEmail()
+        {
+            var sql = $"SELECT * FROM user WHERE Username = @Username OR Email = @Username ;";
+            return sql;
+        }
+
+        public static string GetUserByEmail()
+        {
+            var sql = $"SELECT * FROM user WHERE Email = @Email ;";
+            return sql;
+        }
+
+        public static string GetUserByUsername()
+        {
+            var sql = $"SELECT * FROM user WHERE Username = @Username ;";
             return sql;
         }
     }

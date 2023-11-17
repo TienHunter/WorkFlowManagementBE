@@ -36,7 +36,7 @@ namespace WorkFM.BL.Services.Jwt
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("Username", user.Username),
-                    new Claim("UserId", user.UserId.ToString()),
+                    new Claim("UserId", user.Id.ToString()),
 
                 }),
                 Expires = DateTime.UtcNow.AddSeconds(25),
@@ -52,7 +52,7 @@ namespace WorkFM.BL.Services.Jwt
             var refreshTokenEntity = new RefreshToken
             {
                 RefreshTokenId = Guid.NewGuid(),
-                UserId = user.UserId,
+                UserId = user.Id,
                 Token = refreshToken,
                 JwtId = token.Id,
                 IsUsed = false,
