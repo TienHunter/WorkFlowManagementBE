@@ -189,7 +189,7 @@ namespace WorkFM.BL.Services.Bases
             if (entity is BaseEntity)
             {
                 var baseEntity = entity as BaseEntity;
-                baseEntity.Id = Guid.NewGuid();
+                baseEntity.Id = _systenService.NewGuid();
             };
             if (entity is IsHasInfoCreate)
             {

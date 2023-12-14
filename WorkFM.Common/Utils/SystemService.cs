@@ -17,5 +17,10 @@ namespace WorkFM.Common.Utils
         {
             return DateTime.UtcNow;
         }
+
+        public Guid NewGuid()
+        {
+            return Guid.NewGuid();
+        }
     }
 }

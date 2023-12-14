@@ -32,5 +32,26 @@ namespace WorkFM.BL.Services.Projects
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ServiceResponse> GetProjectsInWorkspaceAsync(Guid id);
+
+        /// <summary>
+        /// get project by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ServiceResponse> GetByIdAsync(Guid id);
+
+        /// <summary>
+        /// get list project with query params
+        /// </summary>
+        /// <param name="paramQuery"></param>
+        /// <returns></returns>
+        Task<ServiceResponse> GetList(ParamQueryProject paramQuery);
+
+        /// <summary>
+        /// Edit projectName
+        /// </summary>
+        /// <param name="projectUpdateDto"></param>
+        /// <returns></returns>
+        Task<ServiceResponse> EditProjectNameAsync(ProjectUpdateDto projectUpdateDto);
     }
 }

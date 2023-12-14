@@ -13,5 +13,9 @@ namespace WorkFM.Common.Lib
         {
             return JsonConvert.SerializeObject(obj);
         }
+
+        public static T DeserializeObject<T>(string json) {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
     }
 }

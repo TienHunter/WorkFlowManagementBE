@@ -102,7 +102,7 @@ namespace WorkFM.DL.Repos.Bases
             };
         }
 
-        public async Task<TEntity> GetByIdAsync(Guid id)
+        public virtual async Task<TEntity> GetByIdAsync(Guid id)
         {
             var sql = QueryCommand.GetById<TEntity>();
 
@@ -153,7 +153,7 @@ namespace WorkFM.DL.Repos.Bases
             .Where(prop => !Attribute.IsDefined(prop, typeof(KeyAttribute)) && prop.Name != "Id")
             .Select(prop => prop.Name)
             .ToList();
-                var pKey = typeof(TEntity).GetProperties().FirstOrDefault(p => Attribute.IsDefined(p, typeof(KeyAttribute)) || p.Name == "Id");
+                var pKey = typeof(TEntity).GetProperties().FirstOrDefault(p => Attribute.IsDefined(p, typeof(KeyAttribute)) || p.Name == "Id").Name;
 
                 if(pKey == null)
                 {

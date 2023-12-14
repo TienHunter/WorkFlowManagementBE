@@ -15,7 +15,7 @@ namespace WorkFM.Common.Data.UserProjects
         public Guid UserId { get; set; }
         public Guid ProjectId { get; set; }
         public UserRole UserRole { get; set; } = UserRole.Member;
-        public bool IsFavarite { get; set; } = false;
+        public bool IsFavorite { get; set; } = false;
         public DateTime? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -23,5 +23,7 @@ namespace WorkFM.Common.Utils
         /// </summary>
         /// <returns></returns>
         public DateTime GetUtcNow();
+
+        public Guid NewGuid();
     }
 }

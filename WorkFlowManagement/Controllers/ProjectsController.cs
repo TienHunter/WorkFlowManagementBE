@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using WorkFM.BL.Services.Projects;
 using WorkFM.Common.Data.Projects;
 using WorkFM.Common.Data.Workspaces;
+using WorkFM.Common.Dto;
 
 namespace WorkFM.API.Controllers
 {
@@ -51,6 +52,28 @@ namespace WorkFM.API.Controllers
             var res = await _projectBL.GetProjectsInWorkspaceAsync(id);
             return Ok(res);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute][Required] Guid id)
+        {
+            var res = await _projectBL.GetByIdAsync(id);
+            return Ok(res);
+        }
+        [HttpGet("")]
+        public async Task<IActionResult> GetList([FromQuery] ParamQueryProject paramQuery)
+        {
+            var res = await _projectBL.GetList(paramQuery);
+            return Ok(res);
+        }
+
+        [HttpPut("edit-projectname")]
+        public async Task<IActionResult> EditProjectName([FromBody] ProjectUpdateDto projectUpdateDto)
+        {
+            var res = await _projectBL.EditProjectNameAsync( projectUpdateDto);
+            return Ok(res);
+        }
+
+
 
     }
 }

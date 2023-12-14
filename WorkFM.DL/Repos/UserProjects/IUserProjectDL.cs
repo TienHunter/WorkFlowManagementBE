@@ -15,6 +15,6 @@ namespace WorkFM.DL.Repos.UserProjects
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        Task<UserProject> GetByProjectIdAndUserId(Dictionary<string, object> parameters);
+        Task<UserProject> GetByProjectIdAndUserIdAsync(Guid ProjectId, Guid UserId);
     }
 }

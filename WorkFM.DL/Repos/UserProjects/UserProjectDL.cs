@@ -15,8 +15,12 @@ namespace WorkFM.DL.Repos.UserProjects
         {
         }
 
-        public async Task<UserProject> GetByProjectIdAndUserId(Dictionary<string, object> parameters)
+        public async Task<UserProject> GetByProjectIdAndUserIdAsync(Guid ProjectId, Guid UserId)
         {
+            var parameters = new Dictionary<string, object>()
+            {
+                {"@ProjectId", ProjectId},{"@UserId",UserId }
+            };
             var cmd = $"Select * from {_tableName} where ProjectId = @ProjectId and UserId = @UserId order by UpdatedAt DESC limit 1;";
             return await base.QuerySingleAsync(cmd, parameters);
         }

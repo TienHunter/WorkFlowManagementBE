@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkFM.Common.Attributes;
 using WorkFM.Common.Enums;
 using WorkFM.Common.Models.Base;
 
@@ -18,6 +19,10 @@ namespace WorkFM.Common.Data.Projects
         public ProjectType Type { get; set; }
         public Guid ImageId { get; set; }
 
+        [IgnoreProp]
+        public UserRole UserRole { get; set; }
+        [IgnoreProp]
+        public bool IsFavorite { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }

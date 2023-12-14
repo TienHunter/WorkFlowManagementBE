@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using WorkFM.BL.Services.Bases;
@@ -17,7 +18,7 @@ using WorkFM.DL.Repos.UserWorkspaces;
 
 namespace WorkFM.BL.Services.Projects
 {
-    public class ProjectBL:BaseBL<ProjectDto, Project>, IProjectBL
+    public class ProjectBL : BaseBL<ProjectDto, Project>, IProjectBL
     {
         private readonly IProjectDL _projectDL;
         private readonly IDbLogger<ProjectBL> _logger;
@@ -29,7 +30,7 @@ namespace WorkFM.BL.Services.Projects
             _projectDL = projectDL;
             _logger = serviceProvider.GetService(typeof(IDbLogger<ProjectBL>)) as IDbLogger<ProjectBL>;
             _userWorkspaceDL = serviceProvider.GetService(typeof(IUserWorkspaceDL)) as IUserWorkspaceDL;
-            _userProjectDL= serviceProvider.GetService(typeof(IUserProjectDL)) as IUserProjectDL;
+            _userProjectDL = serviceProvider.GetService(typeof(IUserProjectDL)) as IUserProjectDL;
         }
 
         public async Task<ServiceResponse> CreateAsync(ProjectCreateDto projectCreateDto)
@@ -43,7 +44,7 @@ namespace WorkFM.BL.Services.Projects
             _ = await _userWorkspaceDL.GetByUserIdAndWorkspaceId(parameters) ?? throw new BaseException
             {
                 StatusCode = System.Net.HttpStatusCode.Unauthorized,
-                ErrorMessage= "Unauthorized"
+                ErrorMessage = "Unauthorized"
             };
             // mapping
             var project = _mapper.Map<Project>(projectCreateDto);
@@ -68,7 +69,8 @@ namespace WorkFM.BL.Services.Projects
 
                 await _uow.CommitAsync();
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 await _uow.RollbackAsync();
                 _logger.LogError(ex, ex.Message);
@@ -81,6 +83,65 @@ namespace WorkFM.BL.Services.Projects
             return new ServiceResponse
             {
                 Data = projectDto
+            };
+        }
+
+        public async Task<ServiceResponse> EditProjectNameAsync(ProjectUpdateDto projectUpdateDto)
+        {
+            // check exist
+            var existProject = await _projectDL.GetByIdAsync(projectUpdateDto.Id) ?? throw new BaseException
+            {
+                StatusCode = HttpStatusCode.NotFound,
+                ErrorMessage = "Not found"
+            };
+            if (existProject.UserId != _contextData.UserId)
+            {
+                throw new BaseException
+                {
+                    StatusCode = HttpStatusCode.Forbidden,
+                    ErrorMessage = "You not permission"
+                };
+            }
+
+            existProject.ProjectName = projectUpdateDto.ProjectName;
+            base.BeforeUpdate(ref existProject);
+            // update
+            var fieldsUpdate = "ProjectName";
+            var res = await _projectDL.UpdateAsync(existProject, fieldsUpdate);
+            if (res == 0)
+            {
+                throw new BaseException
+                {
+                    ErrorMessage = "Update project name failure"
+                };
+            }
+
+            return new ServiceResponse();
+        }
+
+        public async Task<ServiceResponse> GetByIdAsync(Guid id)
+        {
+            var project = await _projectDL.GetByIdAsync(id);
+            var projectDto = _mapper.Map<ProjectDto>(project) ?? throw new BaseException
+            {
+                StatusCode = HttpStatusCode.NotFound,
+            };
+
+            return new ServiceResponse { Data = projectDto };
+        }
+
+        public async Task<ServiceResponse> GetList(ParamQueryProject paramQuery)
+        {
+            paramQuery.UserId = _contextData.UserId;
+
+            var res = await _projectDL.GetList(paramQuery);
+            var resDto = new PagingResponse
+            {
+                Data = _mapper.Map<List<ProjectDto>>(res.Data)
+            };
+            return new ServiceResponse
+            {
+                Data = resDto
             };
         }
 
@@ -121,12 +182,12 @@ namespace WorkFM.BL.Services.Projects
             };
 
             // check authen
-            var parameters = new Dictionary<string, object>
-            {
-                {"@ProjectId",id },
-                {"@UserId", _contextData.UserId}
-            };
-            var userProject = await _userProjectDL.GetByProjectIdAndUserId(parameters);
+            //var parameters = new Dictionary<string, object>
+            //{
+            //    {"@ProjectId",id },
+            //    {"@UserId", _contextData.UserId}
+            //};
+            var userProject = await _userProjectDL.GetByProjectIdAndUserIdAsync(id,_contextData.UserId);
             if (userProject == null || userProject.UserRole != Common.Enums.UserRole.Admin) throw new BaseException
             {
                 StatusCode = System.Net.HttpStatusCode.Unauthorized,

@@ -14,7 +14,7 @@ namespace WorkFM.BL.Services.Projects
         {
             CreateMap<ProjectCreateDto, Project>();
             CreateMap<ProjectUpdateDto, Project>();
-            CreateMap<Project, ProjectDto>();
+            CreateMap<Project, ProjectDto>().ReverseMap();
         }
     }
 }

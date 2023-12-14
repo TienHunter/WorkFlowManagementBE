@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WorkFM.Common.Enums;
 using System.Reflection;
 using WorkFM.Common.Utils;
+using WorkFM.Common.Attributes;
 
 namespace WorkFM.Common.Commands
 {
@@ -66,17 +67,17 @@ namespace WorkFM.Common.Commands
 
         public static string GetById<T>()
         {
-            var tableNameAttribute = typeof(T).GetCustomAttributes<TableAttribute>().FirstOrDefault();
+            var tableName = typeof(T).GetCustomAttributes<TableAttribute>().FirstOrDefault()?.Name ?? typeof(T).Name.ToLower();
             var properties = typeof(T).GetProperties();
-            var keyProperty = properties.FirstOrDefault(p => Attribute.IsDefined(p, typeof(KeyAttribute)));
+            var keyName = properties.FirstOrDefault(p => Attribute.IsDefined(p, typeof(KeyAttribute)))?.Name ?? "Id";
 
-            if (tableNameAttribute == null || keyProperty == null)
-            {
-                // ghi log
-                throw new Exception("Invalid typeEntity or keyProperty");
-            }
+            //if (tableNameAttribute == null || keyProperty == null)
+            //{
+            //    // ghi log
+            //    throw new Exception("Invalid typeEntity or keyProperty");
+            //}
 
-            var sql = $"SELECT * FROM {tableNameAttribute.Name} WHERE {keyProperty.Name} = @Id";
+            var sql = $"SELECT * FROM {tableName} WHERE {keyName} = @Id";
             return sql;
         }
 
@@ -107,7 +108,7 @@ namespace WorkFM.Common.Commands
         public static string Create<T>()
         {
             var tableName = Helper.GetTableName(typeof(T));
-            var properties = typeof(T).GetProperties();
+            var properties = typeof(T).GetProperties().Where(prop => prop.GetCustomAttribute<IgnoreProp>() == null);
             var sql = $"INSERT INTO {tableName} (";
             sql += string.Join(" , ", properties.Select(prop => prop.Name));
             sql += $") VALUES ({string.Join(", ", properties.Select(prop => $"@{prop.Name}"))});";
@@ -118,7 +119,7 @@ namespace WorkFM.Common.Commands
         public static string Update<T>()
         {
             var tableNameAttribute = typeof(T).GetCustomAttributes<TableAttribute>().FirstOrDefault();
-            var properties = typeof(T).GetProperties();
+            var properties = typeof(T).GetProperties().Where(prop => prop.GetCustomAttribute<IgnoreProp>() == null);
             var keyProperty = properties.FirstOrDefault(p => Attribute.IsDefined(p, typeof(KeyAttribute)));
             if (tableNameAttribute == null || keyProperty == null)
             {

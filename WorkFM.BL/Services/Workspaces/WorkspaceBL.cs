@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using NLog;
 using System;
@@ -95,10 +96,14 @@ namespace WorkFM.BL.Services.Workspaces
 
         public async Task<ServiceResponse> GetByIdAsync(Guid id)
         {
-            var res = await _workspaceDL.GetWorkspaceByIdAsync(id, _contextData.UserId);
+            var res = await _workspaceDL.GetWorkspaceByIdAsync(id, _contextData.UserId) ?? throw new BaseException
+            {
+                StatusCode=HttpStatusCode.NotFound,
+            };
+            var resDto = _mapper.Map<WorkspaceDto>(res);
             return new ServiceResponse
             {
-                Data = res
+                Data = resDto
             };
         }
 

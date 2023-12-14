@@ -18,6 +18,27 @@ namespace WorkFM.DL.Repos.Projects
         {
         }
 
+        public async Task<PagingResponse> GetList(ParamQueryProject paramsQuery)
+        {
+            var cmd = @$"SELECT p.*,up.UserRole,up.IsFavorite 
+                                FROM project p 
+                                INNER JOIN user_project up  ON 
+                                    p.Id = up.ProjectId   AND up.UserId = @UserId ";
+            if(paramsQuery.Owner)
+            {
+                cmd += " AND p.UserId = up.UserId ";
+            }
+            cmd += @$"WHERE p.WorkspaceId = @WorkspaceId";
+
+            var res = await _uow.Connection.QueryAsync<Project>(cmd, paramsQuery);
+
+            return new PagingResponse
+            {
+                Data = res.ToList()
+            };
+                                   
+        }
+
         public async Task<PagingResponse> GetProjectsInWorkspaceAsync(Dictionary<string, object> parameters)
         {
             var cmd = $@"

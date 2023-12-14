@@ -14,7 +14,7 @@ namespace WorkFM.BL.Services.Workspaces
         {
             CreateMap<WorkspaceCreateDto, Workspace>();
             CreateMap<WorkspaceUpdateDto, Workspace>();
-            CreateMap<WorkspaceDto, Workspace>();
+            CreateMap<WorkspaceDto, Workspace>().ReverseMap();
         }
     }
 }
