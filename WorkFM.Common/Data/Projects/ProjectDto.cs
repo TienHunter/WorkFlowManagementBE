@@ -14,7 +14,7 @@ namespace WorkFM.Common.Data.Projects
         public Guid WorkspaceId { get; set; }
         public string ProjectName { get; set; }
         public ProjectType Type { get; set; }
-        public Guid ImageId { get; set; }
+        public string ImageUrl { get; set; }
         public UserRole UserRole { get; set; }
         public bool IsFavorite { get; set; }
         public DateTime? CreatedAt { get; set; }

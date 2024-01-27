@@ -19,6 +19,6 @@ namespace WorkFM.Common.Data.Projects
         [Required]
         public ProjectType Type { get; set; }
 
-        public Guid ImageId { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

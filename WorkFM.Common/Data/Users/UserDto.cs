@@ -14,6 +14,6 @@ namespace WorkFM.Common.Models.Users
         public string Email { get; set; }
         public string Provider { get; set; }
         public string Fullname { get; set; }
-        public string ProfilePicture { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

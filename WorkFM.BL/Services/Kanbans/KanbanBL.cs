@@ -34,7 +34,7 @@ namespace WorkFM.BL.Services.Kanbans
             //    {"@ProjectId", kanbanCreateDto.ProjectId }
             //};
             var userProject = await _userProjectDL.GetByProjectIdAndUserIdAsync(kanbanCreateDto.ProjectId, _contextData.UserId);
-            if(userProject == null || userProject.UserRole == Common.Enums.UserRole.Member)
+            if (userProject == null || userProject.UserRole == Common.Enums.UserRole.Member)
             {
                 throw new BaseException
                 {
@@ -48,7 +48,7 @@ namespace WorkFM.BL.Services.Kanbans
             kanban.UserId = _contextData.UserId;
 
             var res = await _kanbanDL.CreateAsync(kanban);
-            if(res == 0)
+            if (res == 0)
             {
                 throw new BaseException { ErrorMessage = "Create kanban failure" };
             }
@@ -65,6 +65,16 @@ namespace WorkFM.BL.Services.Kanbans
 
             var res = await _kanbanDL.GetListByProjectIdAsync(projectId);
             var kanbanList = _mapper.Map<List<KanbanDto>>(res);
+
+            foreach (var k in kanbanList)
+            {
+                foreach (var c in k.Cards)
+                {
+                    c.Tags = c.Tags.Where(t=>t.IsUsed).ToList();
+                }
+            }
+
+
             return new ServiceResponse { Data = kanbanList, };
         }
 

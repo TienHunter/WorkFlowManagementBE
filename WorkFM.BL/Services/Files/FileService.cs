@@ -45,8 +45,9 @@ namespace WorkFM.BL.Services.Files
             _uow = serviceProvider.GetService(typeof(IUnitOfWork)) as IUnitOfWork;
             _cardDL = serviceProvider.GetService(typeof(ICardDL)) as ICardDL;
             _minioStoreConfig = minioStoreConfig;
-
-
+            _userDL = serviceProvider.GetService(typeof(IUserDL)) as IUserDL;
+            _workspaceDL = serviceProvider.GetService(typeof(IWorkspaceDL)) as IWorkspaceDL;
+            _projectDL = serviceProvider.GetService(typeof(IProjectDL)) as IProjectDL;
         }
 
         public async Task<FileDto> GetFileAsync(Guid attachId)
@@ -59,12 +60,18 @@ namespace WorkFM.BL.Services.Files
             };
             try
             {
-                var stream = await _minioService.GetFileAsync(attachment.BucketName, attachment.ObjectName);
-                return new FileDto
+                var stream = await _minioService.GetFileAsync(attachment.BucketName, attachment.ObjectName) ?? throw new BaseException
                 {
-                    ObjectName = attachment.ObjectName,
-                    Stream = stream
+                    ErrorMessage = "Not found file attach"
                 };
+
+                    return new FileDto
+                    {
+                        FileName = attachment.FileName,
+                        Stream = stream,
+                        ContentType = attachment.ContentType,
+                    };
+
 
             }
             catch (Exception ex)
@@ -77,8 +84,23 @@ namespace WorkFM.BL.Services.Files
 
         }
 
-        public async Task<ServiceResponse> UploadAvatarAsync(IFormFile file, AttachmentType type, Guid id)
+        public Task<FileDto> GetFileByObjectNameAsync(string objectName)
         {
+            throw new NotImplementedException();
+        }
+
+        public async Task RemoveFileAsync(Guid id)
+        {
+            var attachment = await _attachmentDL.GetByIdAsync(id);
+            if (attachment == null) return;
+            await _attachmentDL.DeleteAsync(id);
+            await _minioService.RemoveObjectAsync(attachment.BucketName, attachment.ObjectName);
+        }
+
+
+        public async Task<ServiceResponse> UploadAvatarAsync(IFormFile file)
+        {
+            // check file anh
             if (file.Length > 0)
             {// Lấy đuôi của file
                 string fileExtension = Path.GetExtension(file.FileName);
@@ -93,6 +115,7 @@ namespace WorkFM.BL.Services.Files
 
                     try
                     {
+
                         // Make a bucket on the server, if not already present.
                         var found = await _minioService.BucketExistAsync(bucketName);
                         if (!found)
@@ -110,17 +133,14 @@ namespace WorkFM.BL.Services.Files
                         };
                     }
                 }
-                //var fields = "image"
-                // // update imageid of entity
-                //if (type == attachmenttype.avatar)
-                //{
-                //    await
-                //}
+                // update imageUrl
+                var imageUrl = $"{_minioStoreConfig.Url}/{bucketName}/{objectName}";
+                await _userDL.UpdateImageUrlAsync(_contextData.UserId, imageUrl);
 
-
+                // url image
                 return new ServiceResponse
                 {
-                    Data = "aa"
+                    Data = imageUrl
                 };
             }
             else
@@ -141,7 +161,7 @@ namespace WorkFM.BL.Services.Files
         /// <param name="file"></param>
         /// <returns></returns>
         /// <exception cref="BaseException"></exception>
-        public async Task<ServiceResponse> UploadFileAsync(IFormFile file, AttachmentType type, Guid id)
+        public async Task<ServiceResponse> UploadFileAsync(IFormFile file, Guid id)
         {
             if (file.Length > 0)
             {// Lấy đuôi của file
@@ -150,7 +170,6 @@ namespace WorkFM.BL.Services.Files
                 var objectName = _systenService.NewGuid().ToString() + fileExtension;
                 var contentType = file.ContentType;
                 long length = file.Length;
-
                 using (var strean = new MemoryStream())
                 {
                     file.CopyTo(strean);
@@ -226,6 +245,116 @@ namespace WorkFM.BL.Services.Files
                 };
             }
 
+
+        }
+
+        public async Task<ServiceResponse> UploadImageProjectAsync(IFormFile file, Guid id)
+        {
+            // check file anh
+            if (file.Length > 0)
+            {// Lấy đuôi của file
+                string fileExtension = Path.GetExtension(file.FileName);
+                var bucketName = BucketName.Avatar;
+                var objectName = _systenService.NewGuid().ToString() + fileExtension;
+                var contentType = file.ContentType;
+                long length = file.Length;
+
+                using (var strean = new MemoryStream())
+                {
+                    file.CopyTo(strean);
+
+                    try
+                    {
+
+                        // Make a bucket on the server, if not already present.
+                        var found = await _minioService.BucketExistAsync(bucketName);
+                        if (!found)
+                        {
+                            await _minioService.MakeBucketAsync(bucketName);
+                        }
+                        await _minioService.UploadFileAsync(bucketName, objectName, strean, contentType);
+                    }
+                    catch (Exception ex)
+                    {
+                        // logger 
+                        throw new BaseException
+                        {
+                            ErrorMessage = "Storage file to minio failure"
+                        };
+                    }
+                }
+                // update imageUrl
+                var imageUrl = $"{_minioStoreConfig.Url}/{bucketName}/{objectName}";
+                await _workspaceDL.UpdateImageUrlAsync(id, imageUrl);
+                // url image
+                return new ServiceResponse
+                {
+                    Data = imageUrl
+                };
+            }
+            else
+            {
+                throw new BaseException
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    ErrorMessage = "Invalid input file"
+                };
+            }
+
+        }
+
+        public async Task<ServiceResponse> UploadImageWorkspaceAsync(IFormFile file, Guid id)
+        {
+            // check file anh
+            if (file.Length > 0)
+            {// Lấy đuôi của file
+                string fileExtension = Path.GetExtension(file.FileName);
+                var bucketName = BucketName.Avatar;
+                var objectName = _systenService.NewGuid().ToString() + fileExtension;
+                var contentType = file.ContentType;
+                long length = file.Length;
+
+                using (var strean = new MemoryStream())
+                {
+                    file.CopyTo(strean);
+
+                    try
+                    {
+
+                        // Make a bucket on the server, if not already present.
+                        var found = await _minioService.BucketExistAsync(bucketName);
+                        if (!found)
+                        {
+                            await _minioService.MakeBucketAsync(bucketName);
+                        }
+                        await _minioService.UploadFileAsync(bucketName, objectName, strean, contentType);
+                    }
+                    catch (Exception ex)
+                    {
+                        // logger 
+                        throw new BaseException
+                        {
+                            ErrorMessage = "Storage file to minio failure"
+                        };
+                    }
+                }
+                // update imageUrl
+                var imageUrl = $"{_minioStoreConfig.Url}/{bucketName}/{objectName}";
+                await _workspaceDL.UpdateImageUrlAsync(id, imageUrl);
+                // url image
+                return new ServiceResponse
+                {
+                    Data = imageUrl
+                };
+            }
+            else
+            {
+                throw new BaseException
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    ErrorMessage = "Invalid input file"
+                };
+            }
 
         }
     }

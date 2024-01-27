@@ -34,5 +34,11 @@ namespace WorkFM.DL.Repos.Users
             var sql = QueryCommand.GetUserByUsernameOrEmail();
             return await _uow.Connection.QueryFirstOrDefaultAsync<User>(sql, new { Username = usernameOrEmail });
         }
+
+        public async Task<int> UpdateImageUrlAsync(Guid id, string imageUrl)
+        {
+            var cmd = $"UPDATE {_tableName} SET ImageUrl = @imageUrl WHERE Id = @id";
+            return await _uow.Connection.ExecuteAsync(cmd, new {imageUrl, id}, transaction: _uow.Transaction);
+        }
     }
 }

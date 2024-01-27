@@ -25,5 +25,9 @@ namespace WorkFM.DL.Repos.Projects
         /// <param name="paramsQuery"></param>
         /// <returns></returns>
         Task<PagingResponse> GetList(ParamQueryProject paramsQuery);
+
+        Task<int> UpdateImageUrlAsync(Guid id, string imageUrl);
+
+        Task<Guid> GetProjectIdByJobId(Guid id);
     }
 }

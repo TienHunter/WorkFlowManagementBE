@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using WorkFM.Common.Models.Base;
 
 namespace WorkFM.Common.Data.Jobs
 {
+    [Table("job")]
     public class Job:BaseEntity, IsHasInfoCreate, IsHasInfoUpdate
     {
         public Guid ChecklistId { get; set; }

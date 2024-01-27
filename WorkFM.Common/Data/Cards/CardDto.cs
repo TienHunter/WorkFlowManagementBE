@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorkFM.Common.Attributes;
 using WorkFM.Common.Data.Checklists;
+using WorkFM.Common.Data.Files;
 using WorkFM.Common.Data.Tags;
 using WorkFM.Common.Data.Users;
 using WorkFM.Common.Models.Base;
@@ -27,7 +28,8 @@ namespace WorkFM.Common.Data.Cards
         public List<Tag> Tags { get; set; }
 
         public List<Checklist> Checklists { get; set; }
-       // public List<Member> Members { get; set; }
+        public List<FileEntity> Attachments { get; set; }
+        // public List<Member> Members { get; set; }
 
 
     }

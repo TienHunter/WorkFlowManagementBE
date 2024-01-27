@@ -55,6 +55,14 @@ namespace WorkFM.Common.Lib
                 ).ConfigureAwait(false);
         }
 
+        public async Task RemoveObjectAsync(string bucketName, string objectName)
+        {
+            var args = new RemoveObjectArgs()
+              .WithBucket(bucketName)
+              .WithObject(objectName);
+            await _minioClient.RemoveObjectAsync(args).ConfigureAwait(false);
+        }
+
         public async Task UploadFileAsync(string bucketName, string objectName, Stream fileStream, string contentType = "application/octet-stream")
         {
             fileStream.Seek(0, SeekOrigin.Begin);

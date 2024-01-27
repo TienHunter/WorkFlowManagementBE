@@ -144,7 +144,7 @@ namespace WorkFM.Common.Commands
                 throw new Exception("Invalid typeEntity or keyProperty");
             }
 
-            var sql = $"DELETE FROM {tableNameAttribute.Name} WHERE {keyProperty} = @Id";
+            var sql = $"DELETE FROM {tableNameAttribute.Name} WHERE {keyProperty.Name} = @Id";
             return sql;
         }
 

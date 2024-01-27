@@ -26,5 +26,7 @@ namespace WorkFM.DL.Repos.Workspaces
         /// <returns></returns>
         Task<Workspace> GetWorkspaceByIdAsync(Guid id, Guid userId);
 
+        Task<int> UpdateImageUrlAsync(Guid id,string imageUrl);
+
     }
 }

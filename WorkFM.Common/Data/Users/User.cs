@@ -20,8 +20,7 @@ namespace WorkFM.Common.Models.Users
         public string ProviderId { get; set; }
         public string Provider { get; set; }
         public string Fullname { get; set; }
-        public string ProfilePicture { get; set; }
-
+        public string ImageUrl { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }

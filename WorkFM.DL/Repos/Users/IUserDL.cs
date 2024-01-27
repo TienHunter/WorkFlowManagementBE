@@ -17,5 +17,6 @@ namespace WorkFM.DL.Repos.Users
         public Task<User> GetUserByEmail(string email);
 
         public Task<User> GetUserByUsernameOrEmail(string usernameOrEmail);
+        public Task<int> UpdateImageUrlAsync(Guid id, string imageUrl);
     }
 }

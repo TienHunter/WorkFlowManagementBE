@@ -24,7 +24,7 @@ namespace WorkFM.DL.Repos.Projects
                                 FROM project p 
                                 INNER JOIN user_project up  ON 
                                     p.Id = up.ProjectId   AND up.UserId = @UserId ";
-            if(paramsQuery.Owner)
+            if (paramsQuery.Owner)
             {
                 cmd += " AND p.UserId = up.UserId ";
             }
@@ -36,7 +36,25 @@ namespace WorkFM.DL.Repos.Projects
             {
                 Data = res.ToList()
             };
-                                   
+
+        }
+
+        public async Task<Guid> GetProjectIdByJobId(Guid id)
+        {
+            var cmd = @$"SELECT
+                                  p.Id
+                                FROM project p
+                                  INNER JOIN kanban k
+                                    ON p.Id = k.ProjectId
+                                  INNER JOIN card c
+                                    ON k.Id = c.KanbanId
+                                  INNER JOIN checklist c1
+                                    ON c.Id = c1.CardId
+                                  INNER JOIN job j
+                                    ON c1.Id = j.ChecklistId
+                                WHERE j.Id = @id;";
+            var rs = await _uow.Connection.QueryFirstOrDefaultAsync<Guid>(cmd, new { id });
+            return rs;
         }
 
         public async Task<PagingResponse> GetProjectsInWorkspaceAsync(Dictionary<string, object> parameters)
@@ -69,6 +87,12 @@ namespace WorkFM.DL.Repos.Projects
                 Data = datas,
                 TotalRecords = totalRecords
             };
+        }
+
+        public async Task<int> UpdateImageUrlAsync(Guid id, string imageUrl)
+        {
+            var cmd = $"UPDATE {_tableName} SET ImageUrl = @imageUrl WHERE Id = @id";
+            return await _uow.Connection.ExecuteAsync(cmd, new { imageUrl, id }, transaction: _uow.Transaction);
         }
     }
 }

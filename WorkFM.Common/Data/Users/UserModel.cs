@@ -15,7 +15,7 @@ namespace WorkFM.Common.Data.Users
         public string ProviderId { get; set; }
         public string Provider { get; set; }
         public string Fullname { get; set; }
-        public string ProfilePicture { get; set; }
+        public string ImageUrl { get; set; }
 
 
 

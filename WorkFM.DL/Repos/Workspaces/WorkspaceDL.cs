@@ -48,5 +48,11 @@ namespace WorkFM.DL.Repos.Workspaces
 
             return await _uow.Connection.QueryFirstOrDefaultAsync<Workspace>(cmd, new { id, userId });
         }
+
+        public async Task<int> UpdateImageUrlAsync(Guid id, string imageUrl)
+        {
+            var cmd = $"UPDATE {_tableName} SET ImageUrl = @imageUrl WHERE Id = @id";
+            return await _uow.Connection.ExecuteAsync(cmd, new { imageUrl, id }, transaction: _uow.Transaction);
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WorkFM.Common.Commands;
 using WorkFM.Common.Data.Cards;
 using WorkFM.Common.Data.Checklists;
+using WorkFM.Common.Data.Files;
 using WorkFM.Common.Data.Jobs;
 using WorkFM.Common.Data.Kanbans;
 using WorkFM.DL.Repos.Bases;
@@ -28,17 +29,20 @@ namespace WorkFM.DL.Repos.Cards
 
         public override async Task<Card> GetByIdAsync(Guid id)
         {
-            var cmd = @$"SELECT c.*,cl.*,j.* FROM card c
+            var cmd = @$"SELECT c.*,cl.*,j.*,a.* FROM card c
                                 LEFT JOIN checklist cl ON cl.CardId = c.Id 
                                 LEFT JOIN job j ON j.ChecklistId = cl.Id
-                                WHERE c.Id = @id ORDER BY cl.SortOrder,j.SortOrder;";
+                                LEFT JOIN card_attachment ca ON ca.CardId = c.Id
+                                LEFT JOIN attachment a ON a.Id = ca.AttachmentId
+                                WHERE c.Id = @id ORDER BY a.CreatedAt,cl.SortOrder,j.SortOrder;";
             var cardDictionary = new Dictionary<Guid, Card>();
-            var result = await _uow.Connection.QueryAsync<Card, Checklist, Job, Card>(cmd, (card, checklist, job) =>
+            var result = await _uow.Connection.QueryAsync<Card, Checklist, Job, FileEntity, Card>(cmd, (card, checklist, job,attachment) =>
             {
                 if (!cardDictionary.TryGetValue(card.Id, out var cardEntry))
                 {
                     cardEntry = card;
                     cardEntry.Checklists = new List<Checklist>();
+                    cardEntry.Attachments = new List<FileEntity>();
                     cardDictionary.Add(cardEntry.Id, cardEntry);
                 }
 
@@ -59,10 +63,17 @@ namespace WorkFM.DL.Repos.Cards
                         currentChecklist.Jobs.Add(job);
                     }
                 }
+                if(attachment != null)
+                {
+                    if (!cardEntry.Attachments.Any(a => a.Id == attachment.Id))
+                    {
+                        cardEntry.Attachments.Add(attachment);
+                    }
+                }
 
                 return cardEntry;
 
-            }, splitOn: "Id,Id,Id", param: new { id });
+            }, splitOn: "Id,Id,Id,Id", param: new { id });
 
             return result.Distinct().ToList().SingleOrDefault();
         }

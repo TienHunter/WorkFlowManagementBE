@@ -11,6 +11,7 @@ namespace WorkFM.Common.Dto
     public class FileDto
     {
         public Stream Stream { get; set; }
-        public string ObjectName { get; set; }
+        public string FileName { get; set; }
+        public string ContentType { get; set; }
     }
 }

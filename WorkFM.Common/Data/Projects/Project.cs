@@ -17,7 +17,7 @@ namespace WorkFM.Common.Data.Projects
         public Guid WorkspaceId { get; set; }
         public string ProjectName { get; set; }
         public ProjectType Type { get; set; }
-        public Guid ImageId { get; set; }
+        public string ImageUrl { get; set; }
 
         [IgnoreProp]
         public UserRole UserRole { get; set; }

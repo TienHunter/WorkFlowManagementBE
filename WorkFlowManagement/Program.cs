@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
 using NLog;
@@ -19,6 +20,7 @@ using WorkFM.BL.Services.Users;
 using WorkFM.BL.Services.UserWorkspaces;
 using WorkFM.BL.Services.Workspaces;
 using WorkFM.Common.Configs;
+using WorkFM.Common.Data;
 using WorkFM.Common.Data.ContextData;
 using WorkFM.Common.Lib;
 using WorkFM.Common.Utils;
@@ -51,10 +53,12 @@ try
     builder.Services.AddSingleton(minioStoreConfig);
     // Add Minio using the custom endpoint and configure additional settings for default MinioClient initialization
     builder.Services.AddMinio(configureClient => configureClient
-        .WithEndpoint("127.0.0.1:9000")
-        .WithCredentials("qGw9D6kV4QHfVJDXXsnU", "0zPqkbaSp79xCPnqXWJqFvhwe5n1rlkeNlPxUthj")
+        .WithEndpoint(minioStoreConfig.Endpoint)
+        .WithCredentials(minioStoreConfig.AccessKey, minioStoreConfig.SecretKey)
         .WithSSL(false)
         );
+
+
 
 
     // add di jwtconfig
@@ -133,19 +137,22 @@ try
     builder.Services.AddScoped<IJwtSerivce, JwtService>();
     builder.Services.AddScoped<IContextData, ContextData>();
     builder.Services.AddScoped(typeof(IDbLogger<>), typeof(DbLog<>));
-
+    builder.Services.AddSingleton<ProjectHub>();
     builder.Services.AddSingleton<ISystenService, SystemService>();
+    builder.Services.AddSingleton<IDictionary<string, UserProjectConnection>>(opt =>
+    new Dictionary<string, UserProjectConnection>());
 
     // add cors
-    var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy(name: MyAllowSpecificOrigins,
+        options.AddPolicy(name: "CorsPolicy",
                           policy =>
                           {
-                              policy.AllowAnyHeader();
-                              policy.AllowAnyMethod();
-                              policy.AllowAnyOrigin();
+                              policy.WithOrigins("http://localhost:5173")
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod()
+                                      .AllowCredentials()
+                                      ;
                           });
     });
 
@@ -154,10 +161,11 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-
+    builder.Services.AddSignalR();
 
     var app = builder.Build();
-    app.UseCors(MyAllowSpecificOrigins);
+    app.UseCors("CorsPolicy");
+
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -165,16 +173,23 @@ try
         app.UseSwaggerUI();
     }
 
+
     app.UseHttpsRedirection();
 
-    app.UseAuthentication();
-    app.UseAuthorization();
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseMiddleware<JwtContextMiddleware>();
 
-    app.MapControllers();
+    
+    app.UseRouting();
 
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapHub<ProjectHub>("/project-socket");
+    });
+    app.MapControllers();
     app.Run();
 
 }

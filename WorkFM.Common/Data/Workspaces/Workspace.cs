@@ -17,7 +17,7 @@ namespace WorkFM.Common.Data.Workspaces
     {
         public Guid UserId { get; set; }
         public string WorkspaceName { get; set; }
-        public Guid ImageId { get; set; }
+        public string ImageUrl { get; set; }
         public WorkspaceType Type { get; set; }
         public int SortOrder { get; set; }
         public string Description { get; set; }

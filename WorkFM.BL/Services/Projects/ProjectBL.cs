@@ -11,6 +11,7 @@ using WorkFM.Common.Data.UserProjects;
 using WorkFM.Common.Dto;
 using WorkFM.Common.Exceptions;
 using WorkFM.Common.Lib;
+using WorkFM.Common.Utils;
 using WorkFM.DL.Repos.Bases;
 using WorkFM.DL.Repos.Projects;
 using WorkFM.DL.Repos.UserProjects;
@@ -24,13 +25,15 @@ namespace WorkFM.BL.Services.Projects
         private readonly IDbLogger<ProjectBL> _logger;
         private readonly IUserWorkspaceDL _userWorkspaceDL;
         private readonly IUserProjectDL _userProjectDL;
+        private readonly ProjectHub _projectHub;
 
-        public ProjectBL(IServiceProvider serviceProvider, IProjectDL projectDL) : base(serviceProvider, projectDL)
+        public ProjectBL(IServiceProvider serviceProvider, IProjectDL projectDL, ProjectHub projectHub) : base(serviceProvider, projectDL)
         {
             _projectDL = projectDL;
             _logger = serviceProvider.GetService(typeof(IDbLogger<ProjectBL>)) as IDbLogger<ProjectBL>;
             _userWorkspaceDL = serviceProvider.GetService(typeof(IUserWorkspaceDL)) as IUserWorkspaceDL;
             _userProjectDL = serviceProvider.GetService(typeof(IUserProjectDL)) as IUserProjectDL;
+            _projectHub = projectHub;
         }
 
         public async Task<ServiceResponse> CreateAsync(ProjectCreateDto projectCreateDto)
@@ -115,7 +118,18 @@ namespace WorkFM.BL.Services.Projects
                     ErrorMessage = "Update project name failure"
                 };
             }
+            var projectSender = new ProjectSender
+            {
+                Id= existProject.Id,
+                ProjectName = existProject.ProjectName,
+                Type = existProject.Type,
+                ImageUrl = existProject.ImageUrl,
+            };
 
+            TaskCreator.CreateTaskAsync(async() =>
+            {
+                await _projectHub.SendProject(projectSender);
+            });
             return new ServiceResponse();
         }
 

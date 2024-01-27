@@ -11,5 +11,6 @@ namespace WorkFM.DL.Repos.Cards
     public interface ICardDL:IBaseDL<Card>
     {
         public Task<int> CreateCardAtatchmentAsync(CardAttachment cardAttachment);
+        //public Task<int> DeleteCardAttachmentByAttachmentIdAsync();
     }
 }

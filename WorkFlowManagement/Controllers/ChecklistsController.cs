@@ -21,5 +21,13 @@ namespace WorkFM.API.Controllers
             var res = await _checklistBL.CreateAsync(checklistCreateDto);
             return Ok(res);
         }
+
+        [HttpPut("move")]
+        public async Task<IActionResult> Move(ChecklistMoveDto checklistMoveDto)
+        {
+            var res = await _checklistBL.MoveAsync(checklistMoveDto);
+            return Ok(res);
+        }
+
     }
 }

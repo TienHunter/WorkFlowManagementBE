@@ -194,13 +194,13 @@ namespace WorkFM.BL.Services.Bases
             if (entity is IsHasInfoCreate)
             {
                 var hasCreateInfo = entity as IsHasInfoCreate;
-                hasCreateInfo.CreatedAt = _systenService.GetUtcNow();
+                hasCreateInfo.CreatedAt = _systenService.GetNow();
                 hasCreateInfo.CreatedBy = _contextData.UserId.ToString();
             }
             if (entity is IsHasInfoUpdate)
             {
                 var hasUpdateInfo = entity as IsHasInfoUpdate;
-                hasUpdateInfo.UpdatedAt = _systenService.GetUtcNow();
+                hasUpdateInfo.UpdatedAt = _systenService.GetNow();
                 hasUpdateInfo.UpdatedBy = _contextData.UserId.ToString();
             }
         }
@@ -210,8 +210,8 @@ namespace WorkFM.BL.Services.Bases
             if (entity is IsHasInfoUpdate)
             {
                 var hasUpdateInfo = entity as IsHasInfoUpdate;
-                hasUpdateInfo.UpdatedAt = _systenService.GetUtcNow();
-                hasUpdateInfo.UpdatedBy = _contextData.UserId.ToString();
+                hasUpdateInfo.UpdatedAt = _systenService.GetNow();
+                hasUpdateInfo.UpdatedBy = _contextData.Name.ToString();
             }
         }
 
@@ -228,5 +228,7 @@ namespace WorkFM.BL.Services.Bases
 
 
         //#endregion
+
+
     }
 }
